@@ -3,7 +3,7 @@
   :url "https://github.com/malesch/geonames-index"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha8"]
                  ;; System
                  [com.stuartsierra/component "0.3.1"]
                  [com.taoensso/timbre "4.5.1"]
