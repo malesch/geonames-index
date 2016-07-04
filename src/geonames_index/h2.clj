@@ -41,21 +41,23 @@
     (when-not (empty? nmap)
       nmap)))
 
-(defn do-cities15000-locations [db row-fn]
+(defn process-cities15000-locations [db row-fn]
   (let [rows (all-cities15000 db)]
     (for [row rows]
-      {:name            (:name row)
-       :locations       {:lon (float (:long row))
-                         :lat (float (:lat row))}
-       :country         (:country row)
-       :population      (:population row)
-       :classification  {:class  (:fclass row)
-                         :code   (:fcode row)
-                         :admin1 (:admin1 row)
-                         :admin2 (:admin2 row)
-                         :admin3 (:admin3 row)
-                         :admin4 (:admin4 row)}
-       :alternate-names (fetch-alternate-names db (:id row))})))
+      (row-fn
+        {:id              (:id row)
+         :name            (:name row)
+         :coordinates     {:lon (double (:long row))
+                           :lat (double (:lat row))}
+         :country         (:country row)
+         :population      (:population row)
+         :classification  {:class  (:fclass row)
+                           :code   (:fcode row)
+                           :admin1 (:admin1 row)
+                           :admin2 (:admin2 row)
+                           :admin3 (:admin3 row)
+                           :admin4 (:admin4 row)}
+         :alternate-names (fetch-alternate-names db (:id row))}))))
 
 ;; Component
 

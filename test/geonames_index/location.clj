@@ -15,7 +15,7 @@
                                          :ug "مىلان"
                                          :scn "Milanu"}
                        :coordinates {:lon 9.1895100
-                                     :lat 45.4642700}
+                                     :lat 45.464270}
                        :country "IT"
                        :population 1236837
                        :classification {:class "P"

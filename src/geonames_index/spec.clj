@@ -1,13 +1,13 @@
-(ns geonames-index.location
+(ns geonames-index.spec
   (:require [clojure.spec :as s]))
 
 (s/def ::name string?)
-(s/def ::alternate-names (s/map-of keyword? ::name))
+(s/def ::alternate-names (s/nilable (s/map-of keyword? ::name)))
 (s/def ::country (s/and string? #(= (count %) 2)))
 (s/def ::population integer?)
 
-(s/def ::lon float?)
-(s/def ::lat float?)
+(s/def ::lon double?)
+(s/def ::lat double?)
 (s/def ::coordinates (s/keys :req-un [::lon ::lat]))
 
 (s/def ::class (s/and string? #(= (count %) 1)))
