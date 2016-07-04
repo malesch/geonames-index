@@ -9,7 +9,7 @@
                  [com.taoensso/timbre "4.5.1"]
                  ;; Database
                  [com.h2database/h2 "1.4.192"]
-                 [org.clojure/java.jdbc "0.4.2"]
+                 [org.clojure/java.jdbc "0.6.1"]
                  ;; Lucene
                  [org.apache.lucene/lucene-core "6.1.0"]
                  [org.apache.lucene/lucene-analyzers-common "6.1.0"]
