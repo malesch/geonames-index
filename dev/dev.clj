@@ -7,13 +7,22 @@
             [clojure.reflect :refer [reflect]]
             [clojure.repl :refer [apropos dir doc find-doc pst source]]
             [clojure.tools.namespace.repl :refer [refresh refresh-all]]
-            [geonames-index.core :as core]))
+            [geonames-index.core :as core]
+            [geonames-index.h2 :as h2]))
 
-(def dev-config {:db {:classname   "org.h2.Driver"
-                      :subprotocol "h2"
-                      :subname     "~/no-backup/geonames"
-                      :user        "sa"
-                      :password    ""}
+(def dev-config {:db {:adapter            "h2"
+                      :url                "jdbc:h2:file:~/no-backup/geonames"
+                      :username           "sa"
+                      :password           ""
+
+                      ;; Pool configuration (defaults examples)
+                      ;; See: https://github.com/tomekw/hikari-cp#configuration-options
+                      :auto-commit        true
+                      :connection-timeout 30000
+                      :idle-timeout       600000
+                      :minimum-idle       10
+                      :maximum-pool-size  10
+                      :register-mbeans    false}
                  :lucene {:index "./index"}})
 
 (def system (core/create-system dev-config))
