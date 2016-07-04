@@ -14,27 +14,32 @@
 
 (defn add-name-field [doc n]
   (when-not (string/blank? n)
-    (.add doc (StringField. "name" n Field$Store/YES))))
+    (.add doc (StringField. "name" n Field$Store/YES)))
+  doc)
 
 (defn add-alternate-names-field [doc names]
   (when names
-    (doseq [n (filter (complement string/blank?) names)]
-      (.add doc (StringField. "alternate-name" n Field$Store/YES)))))
+    (doseq [n (filter (complement string/blank?) (vals names))]
+      (.add doc (StringField. "alternate-name" n Field$Store/YES))))
+  doc)
 
 (defn add-location-fields [doc {:keys [lon lat]}]
   (when (and lon lat)
-    (.add doc (DoublePoint. "lon" lon))
+    (.add doc (DoublePoint. "lon" (double-array [lon])))
     (.add doc (NumericDocValuesField. "lon" (Double/doubleToRawLongBits lon)))
-    (.add doc (DoublePoint. "lat" lat))
-    (.add doc (NumericDocValuesField. "lat" (Double/doubleToRawLongBits lat)))))
+    (.add doc (DoublePoint. "lat" (double-array [lat])))
+    (.add doc (NumericDocValuesField. "lat" (Double/doubleToRawLongBits lat))))
+  doc)
 
 (defn add-country-code [doc country]
   (when-not (string/blank? country)
-    (.add doc (StringField. "country" country Field$Store/YES))))
+    (.add doc (StringField. "country" country Field$Store/YES)))
+  doc)
 
 (defn add-population-count [doc population]
-  (when-not population
-    (.add doc (LongPoint. "population" population))))
+  (when (pos? population)
+    (.add doc (LongPoint. "population" (long-array [population]))))
+  doc)
 
 (defn add-geonames-classifications [doc {:keys [class code admin1 admin2 admin3 admin4]}]
   (.add doc (StringField. "class" class Field$Store/NO))
@@ -46,7 +51,8 @@
   (when-not (string/blank? admin3)
     (.add doc (StringField. "admin3" admin3 Field$Store/NO)))
   (when-not (string/blank? admin4)
-    (.add doc (StringField. "admin4" admin4 Field$Store/NO))))
+    (.add doc (StringField. "admin4" admin4 Field$Store/NO)))
+  doc)
 
 (defn add-geohash [doc {:keys [class code admin1 admin2 admin3 admin4]}]
   (let [geohash (->> [admin4 admin3 admin2 admin1 code class]
@@ -54,7 +60,8 @@
                      (interpose ".")
                      (apply str))]
     (when-not (string/blank? geohash)
-      (.add doc (StringField. "geohash" geohash Field$Store/NO)))))
+      (.add doc (StringField. "geohash" geohash Field$Store/NO))))
+  doc)
 
 (defn create-document [data]
   (-> (Document.)
