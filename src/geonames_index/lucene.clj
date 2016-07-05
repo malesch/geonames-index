@@ -7,6 +7,7 @@
            [org.apache.lucene.document Document Field$Store StringField DoublePoint LongPoint NumericDocValuesField]
            [org.apache.lucene.index IndexWriter]
            [org.apache.lucene.index IndexWriterConfig]
+           [org.apache.lucene.search SearcherManager SearcherFactory Query TopDocs TopScoreDocCollector]
            [org.apache.lucene.store FSDirectory]))
 
 
@@ -73,11 +74,33 @@
       (add-geonames-classifications (:classification data))
       (add-geohash (:classification data))))
 
+(defn build-result
+  "Generate a list of [doc ID, score] tuples from the TopDocs result."
+  [^TopDocs topDocs]
+  (when topDocs
+    (log/debugf "Max. score = %.2f" (.getMaxScore topDocs))
+    (map (fn [scoredDoc] (vector (.-doc scoredDoc) (.-score scoredDoc))) (.-scoreDocs topDocs))))
+
 ;; Component functions
 
-(defn index-document [indexer ^Document doc]
-  (when-let [writer (:writer indexer)]
+(defn index-document
+  "Add a document to the index."
+  [lucene ^Document doc]
+  (when-let [writer (:writer lucene)]
     (.addDocument writer doc)))
+
+(defn query
+  "Search documents in the index."
+  [lucene ^Query query]
+  (let [manager (:searcher-manager lucene)
+        searcher (.acquire manager)]
+    (try
+      (let [collector (TopScoreDocCollector/create 65535)]
+        (.search searcher query collector)
+        (log/debugf "Query `%s`, total hits = %s" query (.getTotalHits collector))
+        (build-result (.topDocs collector)))
+      (finally
+        (.release manager searcher)))))
 
 
 ;; Component
@@ -93,14 +116,23 @@
   (start [component]
     (log/infof "Starting Lucene with index `%s`" (:index config))
     (let [dir (FSDirectory/open (Paths/get (:index config) (into-array [""])))
-          iwc (create-idx-writer-config config)]
-      (assoc component :writer (IndexWriter. dir iwc))))
+          iwc (create-idx-writer-config config)
+          writer (IndexWriter. dir iwc)]
+      ;; commit directory structure so SearchManager is happy
+      (.commit writer)
+      (-> component
+          (assoc :writer writer)
+          (assoc :searcher-manager (SearcherManager. dir (SearcherFactory.))))))
 
   (stop [component]
     (log/infof "Stopping Lucene")
     (when-let [writer (:writer component)]
+      (.forceMerge writer 1)
+      (.commit writer)
       (.close writer))
-    (dissoc component :writer)))
+    (-> component
+        (assoc :writer nil)
+        (assoc :searcher-manager nil))))
 
 (defn new-lucene [config]
   (->lucene config))
