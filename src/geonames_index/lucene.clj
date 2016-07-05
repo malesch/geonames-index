@@ -4,25 +4,26 @@
             [clojure.string :as string])
   (:import [java.nio.file Paths]
            [org.apache.lucene.analysis.standard StandardAnalyzer]
-           [org.apache.lucene.document Document Field$Store StringField LongPoint]
+           [org.apache.lucene.document Document Field$Store StringField TextField LongPoint]
            [org.apache.lucene.index IndexWriter]
            [org.apache.lucene.index IndexWriterConfig]
            [org.apache.lucene.search SearcherManager SearcherFactory Query TopDocs TopScoreDocCollector]
            [org.apache.lucene.spatial.geopoint.document GeoPointField]
-           [org.apache.lucene.store FSDirectory]))
+           [org.apache.lucene.store FSDirectory]
+           [org.apache.lucene.analysis.util CharArraySet]))
 
 
 ;; General functions
 
 (defn add-name-field [doc n]
   (when-not (string/blank? n)
-    (.add doc (StringField. "name" n Field$Store/YES)))
+    (.add doc (TextField. "name" n Field$Store/YES)))
   doc)
 
 (defn add-alternate-names-field [doc names]
   (when names
     (doseq [n (filter (complement string/blank?) (vals names))]
-      (.add doc (StringField. "alternate-name" n Field$Store/YES))))
+      (.add doc (TextField. "alternate-name" n Field$Store/YES))))
   doc)
 
 (defn add-location-fields [doc {:keys [lat lon]}]
@@ -111,7 +112,7 @@
 ;; Component
 
 (defn create-idx-writer-config [_]
-  (let [iwc (IndexWriterConfig. (StandardAnalyzer.))]
+  (let [iwc (IndexWriterConfig. (StandardAnalyzer. CharArraySet/EMPTY_SET))]
     (.setRAMBufferSizeMB iwc 256.0)
     iwc))
 
