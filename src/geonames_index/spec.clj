@@ -12,7 +12,7 @@
 
 (s/def ::class (s/and string? #(= (count %) 1)))
 (s/def ::code (s/and string? #(< (count %) 11)))
-(s/def ::admin1 string?)
+(s/def ::admin1 (s/nilable string?))
 (s/def ::admin2 (s/nilable string?))
 (s/def ::admin3 (s/nilable string?))
 (s/def ::admin4 (s/nilable string?))

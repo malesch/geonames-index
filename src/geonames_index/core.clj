@@ -42,7 +42,8 @@
 
 (defn index-cities15000 [system]
   (let [{:keys [db lucene]} system]
-    (h2/process-cities15000-locations db (partial index-location lucene))))
+    (h2/process-cities15000-locations db (partial index-location lucene))
+    :OK))
 
 ;; System
 
