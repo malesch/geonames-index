@@ -5,10 +5,12 @@
             [geonames-index.core :refer [config-logging!]]
             [geonames-index.lucene :as l]
             [geonames-index.location :refer :all])
-  (:import [org.apache.lucene.document LongPoint]
+  (:import [org.apache.lucene.analysis.standard StandardAnalyzer]
+           [org.apache.lucene.document LongPoint]
            [org.apache.lucene.index Term]
-           [org.apache.lucene.search TermQuery]
-           [org.apache.lucene.spatial.geopoint.search GeoPointDistanceQuery]))
+           [org.apache.lucene.search TermQuery BooleanQuery$Builder BooleanClause$Occur]
+           [org.apache.lucene.spatial.geopoint.search GeoPointDistanceQuery]
+           [org.apache.lucene.util QueryBuilder]))
 
 ;; Lucene test configuration
 (def config {:index "target/index"})
@@ -16,7 +18,10 @@
 ;; Test location data
 (def locations [;; 2657896
                 {:name            "Zurich"
-                 :alternate-names {:de "Zürich"}
+                 :alternate-names {:de "Zürich"
+                                   :it "Zurigo"
+                                   :la "Turicum"
+                                   :ta "Tagalog"}
                  :coordinates     {:lat 47.36667
                                    :lon 8.55}
                  :country         "CH"
@@ -29,7 +34,11 @@
                                    :admin4 nil}}
                 ;; 2661604
                 {:name            "Basel"
-                 :alternate-names {:de "Basel"}
+                 :alternate-names {:de "Basel"
+                                   :it "Basilea"
+                                   :eo "Bazelo"
+                                   :lv "Bāzele"
+                                   :zh "巴塞尔"}
                  :coordinates     {:lat 47.5584
                                    :lon 7.57327}
                  :country         "CH"
@@ -42,7 +51,7 @@
                                    :admin4 nil}}
                 ;; 2660971
                 {:name            "Dübendorf"
-                 :alternate-names {:de "Dübendorf"}
+                 :alternate-names {:de "Duebendorf"}
                  :coordinates     {:lat 47.39724
                                    :lon 8.61872}
                  :country         "CH"
@@ -90,6 +99,22 @@
       (let [res (l/query lucene query)]
         (is (and (= (count res) 1)
                  (= (ffirst res) 2))))
+      (finally
+        (component/stop lucene)))))
+
+(deftest test-name-query
+  (let [lucene (component/start (l/new-lucene config))
+        name-query (fn [n]
+                     (let [qb (QueryBuilder. (StandardAnalyzer.))]
+                       (.build
+                         (doto (BooleanQuery$Builder.)
+                           (.add (.createBooleanQuery qb "name" n) BooleanClause$Occur/SHOULD)
+                           (.add (.createBooleanQuery qb "alternate-name" n) BooleanClause$Occur/SHOULD)))))]
+    (try
+      (is (= 0 (count (l/query lucene (name-query "foo")))))
+      (is (= 1 (count (l/query lucene (name-query "zurigo")))))
+      (is (= 1 (count (l/query lucene (name-query "zürich")))))
+
       (finally
         (component/stop lucene)))))
 
