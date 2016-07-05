@@ -6,20 +6,20 @@
             [geonames-index.lucene :as lucene]
             [geonames-index.h2 :as h2]))
 
-(def config {:db     {:adapter  "h2"
-                      :url      "jdbc:h2:file:~/no-backup/geonames"
-                      :username "sa"
-                      :password ""
+(def system-config {:db     {:adapter  "h2"
+                             :url      "jdbc:h2:file:~/no-backup/geonames"
+                             :username "sa"
+                             :password ""
 
-                      ;; Pool configuration (defaults examples)
-                      ;; See: https://github.com/tomekw/hikari-cp#configuration-options
-                      :auto-commit true
-                      :connection-timeout 30000
-                      :idle-timeout 600000
-                      :minimum-idle 10
-                      :maximum-pool-size 10
-                      :register-mbeans false}
-             :lucene {:index "./index"}})
+                             ;; Pool configuration (defaults examples)
+                             ;; See: https://github.com/tomekw/hikari-cp#configuration-options
+                             :auto-commit true
+                             :connection-timeout 30000
+                             :idle-timeout 600000
+                             :minimum-idle 10
+                             :maximum-pool-size 10
+                             :register-mbeans false}
+                    :lucene {:index "./index"}})
 
 (defn config-logging!
   ([]
@@ -75,7 +75,7 @@
            [:db :lucene])))
 
 
-;; (def system (component/start-system (create-system config)))
+;; (def system (component/start-system (create-system system-config)))
 ;; (index-cities15000 system)
 ;; (component/stop-system system)
 
