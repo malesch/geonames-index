@@ -21,8 +21,11 @@
                       :register-mbeans false}
              :lucene {:index "./index"}})
 
-(defn config-logging! []
-  (log/merge-config! {:level :info}))
+(defn config-logging!
+  ([]
+   (config-logging! :info))
+  ([level]
+   (log/merge-config! {:level level})))
 
 ;; General functions
 

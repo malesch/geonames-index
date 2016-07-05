@@ -4,7 +4,7 @@
             [clojure.string :as string])
   (:import [java.nio.file Paths]
            [org.apache.lucene.analysis.standard StandardAnalyzer]
-           [org.apache.lucene.document Document Field$Store StringField DoublePoint LongPoint NumericDocValuesField]
+           [org.apache.lucene.document Document Field$Store StringField LongPoint]
            [org.apache.lucene.index IndexWriter]
            [org.apache.lucene.index IndexWriterConfig]
            [org.apache.lucene.search SearcherManager SearcherFactory Query TopDocs TopScoreDocCollector]
@@ -100,6 +100,13 @@
       (finally
         (.release manager searcher)))))
 
+(defn delete-all
+  "Remove all docs from the index"
+  [lucene]
+  (let [writer (:writer lucene)]
+    (doto writer
+      (.deleteAll)
+      (.commit))))
 
 ;; Component
 
