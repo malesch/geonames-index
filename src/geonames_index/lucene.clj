@@ -8,6 +8,7 @@
            [org.apache.lucene.index IndexWriter]
            [org.apache.lucene.index IndexWriterConfig]
            [org.apache.lucene.search SearcherManager SearcherFactory Query TopDocs TopScoreDocCollector]
+           [org.apache.lucene.spatial.geopoint.document GeoPointField]
            [org.apache.lucene.store FSDirectory]))
 
 
@@ -24,12 +25,9 @@
       (.add doc (StringField. "alternate-name" n Field$Store/YES))))
   doc)
 
-(defn add-location-fields [doc {:keys [lon lat]}]
+(defn add-location-fields [doc {:keys [lat lon]}]
   (when (and lon lat)
-    (.add doc (DoublePoint. "lon" (double-array [lon])))
-    (.add doc (NumericDocValuesField. "lon" (Double/doubleToRawLongBits lon)))
-    (.add doc (DoublePoint. "lat" (double-array [lat])))
-    (.add doc (NumericDocValuesField. "lat" (Double/doubleToRawLongBits lat))))
+    (.add doc (GeoPointField. "location" lat lon Field$Store/YES)))
   doc)
 
 (defn add-country-code [doc country]
@@ -61,14 +59,14 @@
                      (interpose ".")
                      (apply str))]
     (when-not (string/blank? geohash)
-      (.add doc (StringField. "geohash" geohash Field$Store/NO))))
+      (.add doc (StringField. "geohash" geohash Field$Store/YES))))
   doc)
 
 (defn create-document [data]
   (-> (Document.)
       (add-name-field (:name data))
       (add-alternate-names-field (:alternate-names data))
-      (add-location-fields (:location data))
+      (add-location-fields (:coordinates data))
       (add-country-code (:country data))
       (add-population-count (:population data))
       (add-geonames-classifications (:classification data))
