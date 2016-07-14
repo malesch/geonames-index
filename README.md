@@ -20,17 +20,14 @@ user=> (use 'geonames-index.core)
 
 user=> (in-ns 'geonames-index.core)
 
-;; Create the system
-geonames-index.core=> (def system (create-system system-config))
-
-;; Start the system
-geonames-index.core=> (alter-var-root #'system component/start)
+;; Create and start the system
+geonames-index.core=> (def system (component/start-system (create-system system-config)))
 
 ;; Start indexing
 geonames-index.core=> (index-cities15000 system)
 
 ;; Stop the system
-geonames-index.core=> (alter-var-root #'system component/stop)
+geonames-index.core=> (component/stop-system system)
 
 ```
 
