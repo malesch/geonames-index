@@ -2,8 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [taoensso.timbre :as log]
             [hikari-cp.core :as hikari]
-            [hugsql.core :as hugsql]
-            [clojure.string :as string]))
+            [hugsql.core :as hugsql]))
 
 ;; Example DB spec
 ;

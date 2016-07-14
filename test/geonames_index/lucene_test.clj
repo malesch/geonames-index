@@ -16,8 +16,8 @@
 (def config {:index "target/index"})
 
 ;; Test location data
-(def locations [;; 2657896
-                {:name            "Zurich"
+(def locations [{:id              2657896
+                 :name            "Zurich"
                  :alternate-names {:de "Zürich"
                                    :it "Zurigo"
                                    :la "Turicum"
@@ -32,8 +32,8 @@
                                    :admin2 "112"
                                    :admin3 "261"
                                    :admin4 nil}}
-                ;; 2661604
-                {:name            "Basel"
+                {:id              2661604
+                 :name            "Basel"
                  :alternate-names {:de "Basel"
                                    :it "Basilea"
                                    :eo "Bazelo"
@@ -49,8 +49,8 @@
                                    :admin2 "1200"
                                    :admin3 "2701"
                                    :admin4 nil}}
-                ;; 2660971
-                {:name            "Dübendorf"
+                {:id              2660971
+                 :name            "Dübendorf"
                  :alternate-names {:de "Duebendorf"}
                  :coordinates     {:lat 47.39724
                                    :lon 8.61872}

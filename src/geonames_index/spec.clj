@@ -1,6 +1,7 @@
 (ns geonames-index.spec
   (:require [clojure.spec :as s]))
 
+(s/def ::id integer?)
 (s/def ::name string?)
 (s/def ::alternate-names (s/nilable (s/map-of keyword? ::name)))
 (s/def ::country (s/and string? #(= (count %) 2)))
@@ -18,4 +19,4 @@
 (s/def ::admin4 (s/nilable string?))
 (s/def ::classification (s/keys :req-un [::class ::code ::admin1 ::admin2 ::admin3 ::admin4]))
 
-(s/def ::location (s/keys :req-un [::name ::alternate-names ::coordinates ::country ::population ::classification]))
+(s/def ::location (s/keys :req-un [::id ::name ::alternate-names ::coordinates ::country ::population ::classification]))

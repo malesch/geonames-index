@@ -2,7 +2,8 @@
 
 ;; Example data structure extracted from the database
 
-(def example-location {:name "Milano"
+(def example-location {:id 3173435
+                       :name "Milano"
                        :alternate-names {:de "Mailand"
                                          :es "Milán"
                                          :ar "ميلانو"

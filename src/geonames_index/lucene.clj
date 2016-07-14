@@ -4,7 +4,7 @@
             [clojure.string :as string])
   (:import [java.nio.file Paths]
            [org.apache.lucene.analysis.standard StandardAnalyzer]
-           [org.apache.lucene.document Document Field$Store StringField TextField LongPoint]
+           [org.apache.lucene.document Document Field$Store StringField TextField LongPoint IntPoint]
            [org.apache.lucene.index IndexWriter]
            [org.apache.lucene.index IndexWriterConfig]
            [org.apache.lucene.search SearcherManager SearcherFactory Query TopDocs TopScoreDocCollector]
@@ -14,6 +14,11 @@
 
 
 ;; General functions
+
+(defn add-geonameid-field [doc id]
+  (when id
+    (.add doc (IntPoint. "geonameid" (int-array [id]))))
+  doc)
 
 (defn add-name-field [doc n]
   (when-not (string/blank? n)
@@ -65,6 +70,7 @@
 
 (defn create-document [data]
   (-> (Document.)
+      (add-geonameid-field (:id data))
       (add-name-field (:name data))
       (add-alternate-names-field (:alternate-names data))
       (add-location-fields (:coordinates data))
