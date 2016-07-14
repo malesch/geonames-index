@@ -60,7 +60,7 @@
   doc)
 
 (defn add-geohash [doc {:keys [class code admin1 admin2 admin3 admin4]}]
-  (let [geohash (->> [admin4 admin3 admin2 admin1 code class]
+  (let [geohash (->> [class code admin1 admin2 admin3 admin4]
                      (filter identity)
                      (interpose ".")
                      (apply str))]
