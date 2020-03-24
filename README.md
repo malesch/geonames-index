@@ -32,7 +32,7 @@ geonames-index.core=> (component/stop-system system)
 ```
 
 
-##License
+## License
 
 Copyright © 2016 Marcus Spiegel
 
